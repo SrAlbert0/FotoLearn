@@ -3,53 +3,63 @@ import { useNavigate } from 'react-router-dom';
 import api from '../utils/api';
 
 const Register = () => {
-  const [formData, setFormData] = useState({ name: '', email: '', password: '', camera: '' });
+  const [name, setName] = useState('');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [camera, setCamera] = useState('');
   const navigate = useNavigate();
 
   const handleRegister = async (e) => {
     e.preventDefault();
     try {
-      await api.post('/users/register', formData);
-      alert('Registro exitoso. Ahora inicia sesión.');
+      await api.post('/users/register', { name, email, password, camera });
+      alert('Registro exitoso, ahora puede iniciar sesión.');
       navigate('/login');
     } catch (error) {
-      console.error('Error al registrar:', error);
-      alert('No se pudo registrar el usuario.');
+      alert('Error al registrarse: ' + error.response?.data?.message || error.message);
     }
   };
 
   return (
-    <div>
-      <h1>Registro</h1>
+    <div className="register">
+      <h1>Registrarse</h1>
       <form onSubmit={handleRegister}>
-        <input
-          type="text"
-          placeholder="Nombre"
-          value={formData.name}
-          onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-          required
-        />
-        <input
-          type="email"
-          placeholder="Correo"
-          value={formData.email}
-          onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-          required
-        />
-        <input
-          type="password"
-          placeholder="Contraseña"
-          value={formData.password}
-          onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-          required
-        />
-        <input
-          type="text"
-          placeholder="Cámara"
-          value={formData.camera}
-          onChange={(e) => setFormData({ ...formData, camera: e.target.value })}
-        />
-        <button type="submit">Registrarse</button>
+        <div>
+          <label>Nombre:</label>
+          <input
+            type="text"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            required
+          />
+        </div>
+        <div>
+          <label>Email:</label>
+          <input
+            type="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            required
+          />
+        </div>
+        <div>
+          <label>Contraseña:</label>
+          <input
+            type="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            required
+          />
+        </div>
+        <div>
+          <label>Cámara:</label>
+          <input
+            type="text"
+            value={camera}
+            onChange={(e) => setCamera(e.target.value)}
+          />
+        </div>
+        <button type="submit">Registrar</button>
       </form>
     </div>
   );

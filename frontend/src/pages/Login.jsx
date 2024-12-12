@@ -1,44 +1,50 @@
 import React, { useState, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
-import api from '../utils/api';
-import AuthContext from '../context/AuthContext';
+import { AuthContext } from '../context/AuthContext';
+import api from '../utils/api'; // Asegúrate de que tu archivo de API esté configurado
 
 const Login = () => {
-  const [formData, setFormData] = useState({ email: '', password: '' });
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [error, setError] = useState(null);
   const { login } = useContext(AuthContext);
   const navigate = useNavigate();
 
-  const handleLogin = async (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await api.post('/users/login', formData);
-      login(response.data); // Guardar datos de usuario
-      navigate('/'); // Redirigir a Home
-    } catch (error) {
-      console.error('Error al iniciar sesión:', error);
-      alert('Credenciales inválidas.');
+      const response = await api.post('/users/login', { email, password });
+      login(response.data); // Guardar datos del usuario en el contexto
+      navigate('/'); // Redirigir al Home
+    } catch (err) {
+      setError('Credenciales inválidas. Inténtalo de nuevo.');
     }
   };
 
   return (
-    <div>
-      <h1>Iniciar Sesión</h1>
-      <form onSubmit={handleLogin}>
-        <input
-          type="email"
-          placeholder="Correo"
-          value={formData.email}
-          onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-          required
-        />
-        <input
-          type="password"
-          placeholder="Contraseña"
-          value={formData.password}
-          onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-          required
-        />
-        <button type="submit">Ingresar</button>
+    <div className="login">
+      <h2>Iniciar Sesión</h2>
+      {error && <p style={{ color: 'red' }}>{error}</p>}
+      <form onSubmit={handleSubmit}>
+        <div>
+          <label>Email:</label>
+          <input
+            type="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            required
+          />
+        </div>
+        <div>
+          <label>Contraseña:</label>
+          <input
+            type="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            required
+          />
+        </div>
+        <button type="submit">Iniciar Sesión</button>
       </form>
     </div>
   );

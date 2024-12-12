@@ -4,8 +4,10 @@ import Home from './pages/Home';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import Courses from './pages/Courses';
+import Lessons from './pages/Lessons';
+import LessonDetails from './pages/LessonDetails';
+import Quiz from './pages/Quiz';
 import PrivateRoute from './components/PrivateRoute';
-import UserCourses from './pages/UserCourses';
 
 function App() {
   return (
@@ -23,10 +25,26 @@ function App() {
           }
         />
         <Route
-          path="/userCourses"
+          path="/courses/:courseId"
           element={
             <PrivateRoute>
-              <UserCourses />
+              <Lessons />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/lessons/:lessonId"
+          element={
+            <PrivateRoute>
+              <LessonDetails />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/lessons/:lessonId/quiz"
+          element={
+            <PrivateRoute>
+              <Quiz />
             </PrivateRoute>
           }
         />

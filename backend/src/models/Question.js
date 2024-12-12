@@ -7,24 +7,15 @@ const Question = sequelize.define('Question', {
     allowNull: false,
   },
   answers: {
-    type: DataTypes.TEXT, // Almacena las respuestas como un JSON
+    type: DataTypes.JSON, 
     allowNull: false,
-    get() {
-      // Convierte el texto JSON a un array al recuperar
-      const rawValue = this.getDataValue('answers');
-      return rawValue ? JSON.parse(rawValue) : [];
-    },
-    set(value) {
-      // Convierte el array a texto JSON al guardar
-      this.setDataValue('answers', JSON.stringify(value));
-    },
   },
   correctAnswer: {
-    type: DataTypes.STRING, // Respuesta correcta
+    type: DataTypes.STRING,
     allowNull: false,
   },
   subjectId: {
-    type: DataTypes.INTEGER, // Relación con el tema
+    type: DataTypes.INTEGER,
     allowNull: false,
   },
 });
