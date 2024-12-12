@@ -5,6 +5,7 @@ import userRoutes from './routes/userRoutes.js';
 import courseRoutes from './routes/courseRoutes.js';
 import subjectRoutes from './routes/subjectRoutes.js'; // Importar rutas de temas
 import questionRoutes from './routes/questionRoutes.js'; // Importar rutas de preguntas
+import userCourseRoutes from './routes/userCourseRoutes.js';
 import cors from 'cors';
 
 dotenv.config();
@@ -36,6 +37,7 @@ app.use('/api/users', userRoutes);
 app.use('/api/courses', courseRoutes);
 app.use('/api/subjects', subjectRoutes);
 app.use('/api/questions', questionRoutes);
+app.use('/api/userCourses', userCourseRoutes);
 
 // Sincronización de base de datos
 sequelize.authenticate()

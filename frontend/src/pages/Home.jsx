@@ -16,7 +16,7 @@ const Home = () => {
       <h1>Bienvenido a FotoLearn</h1>
       {isLoggedIn ? (
         <div>
-          <button onClick={() => navigate('/courses')}>Ver mis cursos</button>
+          <button onClick={() => navigate('/userCourses')}>Ver mis cursos</button>
           <button onClick={handleLogout}>Cerrar sesión</button>
         </div>
       ) : (

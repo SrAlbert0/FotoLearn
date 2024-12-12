@@ -5,6 +5,7 @@ import Login from './pages/Login';
 import Register from './pages/Register';
 import Courses from './pages/Courses';
 import PrivateRoute from './components/PrivateRoute';
+import UserCourses from './pages/UserCourses';
 
 function App() {
   return (
@@ -18,6 +19,14 @@ function App() {
           element={
             <PrivateRoute>
               <Courses />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/userCourses"
+          element={
+            <PrivateRoute>
+              <UserCourses />
             </PrivateRoute>
           }
         />
