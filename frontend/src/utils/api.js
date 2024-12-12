@@ -1,11 +1,11 @@
 import axios from 'axios';
 
 const api = axios.create({
-  baseURL: 'http://localhost:5000/api', // Cambia esto si el backend usa otro puerto o dominio
+  baseURL: 'https://special-happiness-vw44q945x5jcxw99-5000.app.github.dev/api',
   headers: {
     'Content-Type': 'application/json',
   },
+  withCredentials: true, // Necesario si manejas cookies
 });
 
-// Exportar el cliente Axios configurado
 export default api;
