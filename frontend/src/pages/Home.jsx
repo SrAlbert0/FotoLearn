@@ -1,19 +1,34 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
+import React, { useContext } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import AuthContext from '../context/AuthContext';
 
 const Home = () => {
+  const { isLoggedIn, logout } = useContext(AuthContext);
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    logout();
+    navigate('/');
+  };
+
   return (
     <div>
       <h1>Bienvenido a FotoLearn</h1>
-      <p>Elige una sección para empezar:</p>
-      <div>
-        <Link to="/courses">
-          <button>Cursos</button>
-        </Link>
-        <Link to="/subjects">
-          <button>Temas</button>
-        </Link>
-      </div>
+      {isLoggedIn ? (
+        <div>
+          <button onClick={() => navigate('/courses')}>Ver mis cursos</button>
+          <button onClick={handleLogout}>Cerrar sesión</button>
+        </div>
+      ) : (
+        <div>
+          <Link to="/login">
+            <button>Iniciar Sesión</button>
+          </Link>
+          <Link to="/register">
+            <button>Registrarse</button>
+          </Link>
+        </div>
+      )}
     </div>
   );
 };
