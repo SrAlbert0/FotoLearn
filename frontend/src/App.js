@@ -13,9 +13,12 @@ function App() {
   return (
     <Router>
       <Routes>
+        {/* Ruta pública */}
         <Route path="/" element={<Home />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
+
+        {/* Rutas protegidas */}
         <Route
           path="/courses"
           element={

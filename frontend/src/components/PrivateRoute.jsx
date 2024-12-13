@@ -3,14 +3,19 @@ import { Navigate } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
 
 const PrivateRoute = ({ children }) => {
-  const { isAuthenticated } = useContext(AuthContext);
+  const { isAuthenticated, isLoading } = useContext(AuthContext);
 
-  // Si el usuario no está autenticado, redirige al login
+  // Mostrar un indicador de carga mientras se verifica el estado
+  if (isLoading) {
+    return <div>Cargando...</div>;
+  }
+
+  // Si el usuario no está autenticado, redirigir al login
   if (!isAuthenticated) {
     return <Navigate to="/login" />;
   }
 
-  // Si está autenticado, renderiza el contenido protegido
+  // Si está autenticado, renderizar el contenido protegido
   return children;
 };
 
