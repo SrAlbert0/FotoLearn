@@ -1,68 +1,75 @@
 import React, { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import api from '../utils/api';
 
 const Quiz = () => {
-  const { lessonId } = useParams();
+  const { courseId, lessonId } = useParams();
   const [questions, setQuestions] = useState([]);
-  const [answers, setAnswers] = useState({});
-  const [result, setResult] = useState(null);
+  const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
+  const [answers, setAnswers] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchQuestions = async () => {
       try {
-        const response = await api.get(`/questions/subject/${lessonId}`);
+        setLoading(true);
+        setError(null);
+
+        const response = await api.get(`/questions/lesson/${lessonId}`);
         setQuestions(response.data);
-      } catch (error) {
-        alert('Error al obtener las preguntas: ' + error.message);
+      } catch (err) {
+        setError(err.message || 'Error desconocido al cargar las preguntas');
+      } finally {
+        setLoading(false);
       }
     };
+
     fetchQuestions();
   }, [lessonId]);
 
-  const handleSubmit = () => {
-    let correctCount = 0;
-    questions.forEach((question) => {
-      if (answers[question.id] === question.correctAnswer) {
-        correctCount += 1;
-      }
-    });
-    if (correctCount === questions.length) {
-      setResult('¡Felicidades! Has aprobado el quiz.');
+  const handleAnswer = (selectedAnswer) => {
+    setAnswers((prev) => [...prev, selectedAnswer]);
+
+    if (currentQuestionIndex < questions.length - 1) {
+      setCurrentQuestionIndex((prev) => prev + 1);
     } else {
-      setResult('No has aprobado. Inténtalo de nuevo.');
+      const incorrectAnswers = questions.filter(
+        (q, index) => q.correctAnswer !== answers[index]
+      );
+
+      if (incorrectAnswers.length === 0) {
+        alert('¡Has aprobado el quiz!');
+        navigate(`/courses/${courseId}`);
+      } else {
+        alert('Has fallado algunas preguntas. Revisa la lección nuevamente.');
+        navigate(`/courses/${courseId}/lessons/${lessonId}`);
+      }
     }
   };
 
-  const handleChange = (questionId, answer) => {
-    setAnswers({ ...answers, [questionId]: answer });
-  };
-
-  if (result) {
-    return <div className="quiz-result">{result}</div>;
+  if (loading) {
+    return <p>Cargando preguntas...</p>;
   }
+
+  if (error) {
+    return <div>Error: {error}</div>;
+  }
+
+  const currentQuestion = questions[currentQuestionIndex];
 
   return (
     <div className="quiz">
-      <h1>Quiz</h1>
-      {questions.map((question) => (
-        <div key={question.id}>
-          <h3>{question.question}</h3>
-          {question.answers.map((answer, index) => (
-            <div key={index}>
-              <input
-                type="radio"
-                id={`${question.id}-${index}`}
-                name={question.id}
-                value={answer}
-                onChange={() => handleChange(question.id, answer)}
-              />
-              <label htmlFor={`${question.id}-${index}`}>{answer}</label>
-            </div>
-          ))}
-        </div>
-      ))}
-      <button onClick={handleSubmit}>Enviar</button>
+      <h1>Pregunta {currentQuestionIndex + 1} de {questions.length}</h1>
+      <p>{currentQuestion.question}</p>
+      <ul>
+        {currentQuestion.answers.map((answer, index) => (
+          <li key={index}>
+            <button onClick={() => handleAnswer(answer)}>{answer}</button>
+          </li>
+        ))}
+      </ul>
     </div>
   );
 };

@@ -1,12 +1,13 @@
 import React, { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import api from '../utils/api';
 
 const LessonDetails = () => {
-  const { lessonId } = useParams(); // Obtiene el ID de la lección desde la URL
+  const { courseId, lessonId } = useParams(); // Obtiene los IDs de curso y lección desde la URL
   const [lesson, setLesson] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchLessonDetails = async () => {
@@ -53,6 +54,12 @@ const LessonDetails = () => {
         </div>
       )}
       <p>{lesson.text}</p>
+      {/* Botón para comenzar el quiz */}
+      <button
+        onClick={() => navigate(`/courses/${courseId}/lessons/${lessonId}/quiz`)}
+      >
+        Comenzar Quiz
+      </button>
     </div>
   );
 };
