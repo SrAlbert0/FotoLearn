@@ -1,37 +1,58 @@
 import React, { useEffect, useState } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import api from '../utils/api';
 
 const LessonDetails = () => {
-  const { lessonId } = useParams();
+  const { lessonId } = useParams(); // Obtiene el ID de la lección desde la URL
   const [lesson, setLesson] = useState(null);
-  const navigate = useNavigate();
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
-    const fetchLesson = async () => {
+    const fetchLessonDetails = async () => {
       try {
+        setLoading(true);
+        setError(null);
+
+        // Realiza la solicitud para obtener los detalles de la lección
         const response = await api.get(`/subjects/${lessonId}`);
         setLesson(response.data);
-      } catch (error) {
-        alert('Error al obtener la lección: ' + error.message);
+      } catch (err) {
+        setError(err.message || 'Error desconocido al cargar la lección');
+      } finally {
+        setLoading(false);
       }
     };
-    fetchLesson();
+
+    fetchLessonDetails();
   }, [lessonId]);
 
-  const handleTakeQuiz = () => {
-    navigate(`/lessons/${lessonId}/quiz`);
-  };
+  if (loading) {
+    return <p>Cargando lección...</p>;
+  }
+
+  if (error) {
+    return <div>Error: {error}</div>;
+  }
 
   if (!lesson) {
-    return <div>Cargando lección...</div>;
+    return <div>No se encontró la lección solicitada.</div>;
   }
 
   return (
     <div className="lesson-details">
       <h1>{lesson.name}</h1>
+      <p>{lesson.description}</p>
+      {lesson.imageURL && (
+        <div>
+          <img
+            src={lesson.imageURL}
+            alt={lesson.name}
+            style={{ maxWidth: '100%', height: 'auto' }}
+          />
+        </div>
+      )}
       <p>{lesson.text}</p>
-      <button onClick={handleTakeQuiz}>Realizar Quiz</button>
     </div>
   );
 };

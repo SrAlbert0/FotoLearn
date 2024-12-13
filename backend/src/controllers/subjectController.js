@@ -5,6 +5,11 @@ export const getSubjectsByCourse = async (req, res) => {
   const { courseId } = req.params;
 
   try {
+    // Valida que el `courseId` sea un número válido
+    if (isNaN(courseId)) {
+      return res.status(400).json({ message: 'El ID del curso debe ser un número válido' });
+    }
+
     const subjects = await Subject.findAll({ where: { courseId } });
 
     if (!subjects || subjects.length === 0) {
@@ -23,6 +28,11 @@ export const getSubjectDetails = async (req, res) => {
   const { subjectId } = req.params;
 
   try {
+    // Valida que el `subjectId` sea un número válido
+    if (isNaN(subjectId)) {
+      return res.status(400).json({ message: 'El ID del tema debe ser un número válido' });
+    }
+
     const subject = await Subject.findByPk(subjectId);
 
     if (!subject) {
@@ -41,11 +51,17 @@ export const createSubject = async (req, res) => {
   const { courseId } = req.params;
   const { name, description, text, imageURL } = req.body;
 
+  // Validación de los campos
   if (!name) {
     return res.status(400).json({ message: 'El nombre del tema es obligatorio' });
   }
 
   try {
+    // Valida que el `courseId` sea un número válido
+    if (isNaN(courseId)) {
+      return res.status(400).json({ message: 'El ID del curso debe ser un número válido' });
+    }
+
     const newSubject = await Subject.create({
       name,
       description,
