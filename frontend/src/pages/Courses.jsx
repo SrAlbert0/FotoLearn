@@ -4,24 +4,30 @@ import api from '../utils/api';
 const Courses = () => {
   const [userCourses, setUserCourses] = useState([]);
   const [availableCourses, setAvailableCourses] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
   useEffect(() => {
     const fetchCourses = async () => {
       try {
-        // Realizamos las solicitudes
-        const userCoursesResponse = await api.get('/userCourses');
-        const availableCoursesResponse = await api.get('/courses');
+        setLoading(true);
+        setError(null);
 
-        // Obtenemos los datos
+        // Fetch user's assigned courses
+        const userCoursesResponse = await api.get('/userCourses');
         const userCoursesData = userCoursesResponse.data.map((entry) => entry.Course) || [];
+
+        // Fetch all available courses
+        const availableCoursesResponse = await api.get('/courses');
         const notAssignedCourses = availableCoursesResponse.data.notAssignedCourses || [];
 
-        // Actualizamos los estados
+        // Update state with the fetched data
         setUserCourses(userCoursesData);
         setAvailableCourses(notAssignedCourses);
-      } catch (error) {
-        setError(error.message || 'Error desconocido al obtener los cursos');
+      } catch (err) {
+        setError(err.message || 'Error desconocido al obtener los cursos');
+      } finally {
+        setLoading(false);
       }
     };
 
@@ -30,13 +36,29 @@ const Courses = () => {
 
   const handleEnroll = async (courseId) => {
     try {
+      setLoading(true);
+      setError(null);
+
+      // Send request to enroll the user in the course
       await api.post(`/userCourses/${courseId}`);
       alert('Inscripción exitosa');
-      window.location.reload(); // Recargamos la página para actualizar los cursos
-    } catch (error) {
-      alert('Error al inscribirse en el curso: ' + error.message);
+
+      // Refresh course lists after enrollment
+      const userCoursesResponse = await api.get('/userCourses');
+      const availableCoursesResponse = await api.get('/courses');
+
+      setUserCourses(userCoursesResponse.data.map((entry) => entry.Course) || []);
+      setAvailableCourses(availableCoursesResponse.data.notAssignedCourses || []);
+    } catch (err) {
+      alert('Error al inscribirse en el curso: ' + (err.message || 'Error desconocido'));
+    } finally {
+      setLoading(false);
     }
   };
+
+  if (loading) {
+    return <p>Cargando cursos...</p>;
+  }
 
   if (error) {
     return <div>Error: {error}</div>;
@@ -45,19 +67,28 @@ const Courses = () => {
   return (
     <div className="courses">
       <h1>Mis Cursos</h1>
-      <ul>
-        {userCourses.map((course) => (
-          <li key={course.id}>{course.name}</li>
-        ))}
-      </ul>
+      {userCourses.length > 0 ? (
+        <ul>
+          {userCourses.map((course) => (
+            <li key={course.id}>{course.name}</li>
+          ))}
+        </ul>
+      ) : (
+        <p>No estás inscrito en ningún curso.</p>
+      )}
       <h1>Cursos Disponibles</h1>
-      <ul>
-        {availableCourses.map((course) => (
-          <li key={course.id}>
-            {course.name} <button onClick={() => handleEnroll(course.id)}>Inscribirse</button>
-          </li>
-        ))}
-      </ul>
+      {availableCourses.length > 0 ? (
+        <ul>
+          {availableCourses.map((course) => (
+            <li key={course.id}>
+              {course.name}{' '}
+              <button onClick={() => handleEnroll(course.id)}>Inscribirse</button>
+            </li>
+          ))}
+        </ul>
+      ) : (
+        <p>No hay cursos disponibles para inscribirse.</p>
+      )}
     </div>
   );
 };
