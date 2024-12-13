@@ -4,12 +4,13 @@ import api from '../utils/api';
 
 const Quiz = () => {
   const { courseId, lessonId } = useParams();
+  const navigate = useNavigate();
+
   const [questions, setQuestions] = useState([]);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
-  const [answers, setAnswers] = useState([]);
+  const [userAnswers, setUserAnswers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchQuestions = async () => {
@@ -17,6 +18,7 @@ const Quiz = () => {
         setLoading(true);
         setError(null);
 
+        // Fetch questions from backend
         const response = await api.get(`/questions/lesson/${lessonId}`);
         setQuestions(response.data);
       } catch (err) {
@@ -30,22 +32,32 @@ const Quiz = () => {
   }, [lessonId]);
 
   const handleAnswer = (selectedAnswer) => {
-    setAnswers((prev) => [...prev, selectedAnswer]);
+    setUserAnswers((prev) => [...prev, selectedAnswer]);
 
     if (currentQuestionIndex < questions.length - 1) {
-      setCurrentQuestionIndex((prev) => prev + 1);
+      // Move to next question
+      setCurrentQuestionIndex((prevIndex) => prevIndex + 1);
     } else {
-      const incorrectAnswers = questions.filter(
-        (q, index) => q.correctAnswer !== answers[index]
-      );
+      // Submit answers on the last question
+      submitAnswers([...userAnswers, selectedAnswer]);
+    }
+  };
 
-      if (incorrectAnswers.length === 0) {
+  const submitAnswers = async (answers) => {
+    try {
+      const response = await api.post(`/questions/lesson/${lessonId}/submit`, { answers });
+
+      const { passed, incorrectCount } = response.data;
+
+      if (passed) {
         alert('¡Has aprobado el quiz!');
         navigate(`/courses/${courseId}`);
       } else {
-        alert('Has fallado algunas preguntas. Revisa la lección nuevamente.');
+        alert(`Has fallado ${incorrectCount} preguntas. Revisa la lección nuevamente.`);
         navigate(`/courses/${courseId}/lessons/${lessonId}`);
       }
+    } catch (err) {
+      alert('Error al enviar las respuestas: ' + (err.message || 'Error desconocido'));
     }
   };
 
@@ -55,6 +67,10 @@ const Quiz = () => {
 
   if (error) {
     return <div>Error: {error}</div>;
+  }
+
+  if (questions.length === 0) {
+    return <p>No hay preguntas disponibles para esta lección.</p>;
   }
 
   const currentQuestion = questions[currentQuestionIndex];
