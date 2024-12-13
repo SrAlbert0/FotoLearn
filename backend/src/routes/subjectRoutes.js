@@ -1,5 +1,9 @@
 import express from 'express';
-import { getSubjectsByCourse, getSubjectDetails, createSubject } from '../controllers/subjectController.js';
+import {
+  getSubjectsByCourse,
+  getSubjectDetails,
+  createSubject,
+} from '../controllers/subjectController.js';
 import { verifyToken } from '../middleware/authMiddleware.js';
 
 const router = express.Router();
