@@ -13,7 +13,7 @@ function App() {
   return (
     <Router>
       <Routes>
-        {/* Ruta pública */}
+        {/* Rutas públicas */}
         <Route path="/" element={<Home />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
@@ -36,7 +36,7 @@ function App() {
           }
         />
         <Route
-          path="/lessons/:lessonId"
+          path="/courses/:courseId/lessons/:lessonId"
           element={
             <PrivateRoute>
               <LessonDetails />
@@ -44,7 +44,7 @@ function App() {
           }
         />
         <Route
-          path="/lessons/:lessonId/quiz"
+          path="/courses/:courseId/lessons/:lessonId/quiz"
           element={
             <PrivateRoute>
               <Quiz />

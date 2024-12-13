@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import api from '../utils/api';
 
 const Courses = () => {
@@ -6,6 +7,7 @@ const Courses = () => {
   const [availableCourses, setAvailableCourses] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchCourses = async () => {
@@ -56,6 +58,10 @@ const Courses = () => {
     }
   };
 
+  const goToCourseLessons = (courseId) => {
+    navigate(`/courses/${courseId}`);
+  };
+
   if (loading) {
     return <p>Cargando cursos...</p>;
   }
@@ -70,7 +76,10 @@ const Courses = () => {
       {userCourses.length > 0 ? (
         <ul>
           {userCourses.map((course) => (
-            <li key={course.id}>{course.name}</li>
+            <li key={course.id}>
+              {course.name}{' '}
+              <button onClick={() => goToCourseLessons(course.id)}>Ver Temas</button>
+            </li>
           ))}
         </ul>
       ) : (
