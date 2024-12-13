@@ -50,7 +50,7 @@ const Quiz = () => {
       const { passed, incorrectCount } = response.data;
 
       if (passed) {
-        alert('¡Has aprobado el quiz!');
+        alert('¡Has aprobado la lección!');
         navigate(`/courses/${courseId}`);
       } else {
         alert(`Has fallado ${incorrectCount} preguntas. Revisa la lección nuevamente.`);

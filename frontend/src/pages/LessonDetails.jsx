@@ -58,7 +58,7 @@ const LessonDetails = () => {
       <button
         onClick={() => navigate(`/courses/${courseId}/lessons/${lessonId}/quiz`)}
       >
-        Comenzar Quiz
+        Comenzar el test
       </button>
     </div>
   );
