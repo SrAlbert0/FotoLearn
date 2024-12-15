@@ -49,11 +49,11 @@ const LessonDetails = () => {
           <img
             src={lesson.imageURL}
             alt={lesson.name}
-            style={{ maxWidth: '100%', height: 'auto' }}
+            style={{ maxWidth: '450px', maxHeight: '323px', width: '100%', height: 'auto' }}
           />
         </div>
       )}
-      <p>{lesson.text}</p>
+      <div dangerouslySetInnerHTML={{ __html: lesson.text }} />
       {/* Botón para comenzar el quiz */}
       <button
         onClick={() => navigate(`/courses/${courseId}/lessons/${lessonId}/quiz`)}
